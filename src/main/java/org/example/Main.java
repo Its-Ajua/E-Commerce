@@ -90,7 +90,7 @@ public class Main {
                     addOrder(scanner, user);
                     break;
                 case 5:
-                    getAllOrders();
+                    getOrders(user);
                     break;
                 case 6:
                     System.out.println("Logged out successfully!");
@@ -174,11 +174,10 @@ public class Main {
         }
     }
 
-    private static void getAllOrders() {
+    private static void getOrders(User user) {
         try {
             OrderDAO orderDAO = new OrderDAO();
-            List<Order> orders = orderDAO.getAllOrders();
-
+            List<Order> orders = orderDAO.getOrders(user);
             System.out.println("All Orders:");
             for (Order order : orders) {
                 System.out.println("ID: " + order.getId() + ", User ID: " + order.getUserId() + ", Total: " + order.getTotal());
