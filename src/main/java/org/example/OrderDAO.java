@@ -11,27 +11,6 @@ import java.util.List;
 import java.time.Duration;
 
 public class OrderDAO {
-    /**public List<Order> getOrders(User user) throws SQLException {
-        Connection conn = DatabaseConnection.getConnection();
-
-        try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM orders WHERE user_id = ?")) {
-            stmt.setLong(1, user.getId());
-            try (ResultSet rs = stmt.executeQuery()) {
-                List<Order> orders = new ArrayList<>();
-                while (rs.next()) {
-                    Order order = new Order();
-                    order.setId(rs.getLong("id"));
-                    order.setUserId(rs.getLong("user_id"));
-                    order.setTotal(rs.getDouble("total"));
-                    order.setTimestamp(rs.getString("timestamp").toLocalDateTime());
-                    order.setEstimatedDeliveryTime(Duration.between(order.getTimestamp(), rs.getString("estimated_delivery_time").toLocalDateTime()));
-                    orders.add(order);
-                }
-                return orders;
-            }
-        }
-    }*/
-
     public void addOrder(Order order) throws SQLException {
         Connection conn = DatabaseConnection.getConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO orders (user_id, total, timestamp_p, estimateddeliverytime) VALUES (?, ?, ?, ?)");
@@ -41,11 +20,11 @@ public class OrderDAO {
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         Timestamp currentTimestamp = Timestamp.valueOf(currentDateTime);
-        stmt.setTimestamp(3, currentTimestamp); // set current timestamp
+        stmt.setTimestamp(3, currentTimestamp);
 
         LocalDateTime estimatedDeliveryTime = currentDateTime.plusDays(5);
         Timestamp estimatedDeliveryTimestamp = Timestamp.valueOf(estimatedDeliveryTime);
-        stmt.setTimestamp(4, estimatedDeliveryTimestamp); // set estimated delivery time 5 days from now
+        stmt.setTimestamp(4, estimatedDeliveryTimestamp);
 
         stmt.executeUpdate();
 

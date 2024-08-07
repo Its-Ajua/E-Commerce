@@ -178,9 +178,8 @@ public class Main {
         Order order = new Order();
         order.setUserId(user.getId());
         order.setTotal(total);
-        order.setTimestamp(LocalDateTime.now()); // set timestamp to current time
-        order.setEstimatedDeliveryTime(Duration.ofHours(2)); // set estimated delivery time to 2 hours
-
+        order.setTimestamp(LocalDateTime.now());
+        order.setEstimatedDeliveryTime(Duration.ofHours(2));
 
         try {
             OrderDAO orderDAO = new OrderDAO();
