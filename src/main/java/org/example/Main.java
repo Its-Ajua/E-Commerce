@@ -1,6 +1,9 @@
 package org.example;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -33,7 +36,7 @@ public class Main {
     }
 
     private static void login(Scanner scanner) {
-        System.out.print("Enter username: ");
+        System.out.print("Login: Enter username: ");
         String username = scanner.next();
         System.out.print("Enter password: ");
         String password = scanner.next();
@@ -53,7 +56,7 @@ public class Main {
     }
 
     private static void signup(Scanner scanner) {
-        System.out.print("Enter username: ");
+        System.out.print("Signup: Enter username: ");
         String username = scanner.next();
         System.out.print("Enter password: ");
         String password = scanner.next();
@@ -69,16 +72,17 @@ public class Main {
     }
 
     private static void displayProductMenu(Scanner scanner, User user) {
+        ShoppingCart<Product> cart = user.getCart();
+
         while (true) {
             System.out.println("Product Menu:");
-            System.out.println("1. Add Product | 2. Get All Products | 3. Get Product by ID | 4. Add Order | 5. Get All Orders | 6. Logout");
-
+            System.out.println("1. Add Product | 2. Get All Products | 3. Get Product by ID | 4. View Cart | 5. Checkout | 6. Logout");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
 
             switch (choice) {
                 case 1:
-                    addProduct(scanner);
+                    addProduct(scanner, cart);
                     break;
                 case 2:
                     getAllProducts();
@@ -87,10 +91,10 @@ public class Main {
                     getProductById(scanner);
                     break;
                 case 4:
-                    addOrder(scanner, user);
+                    viewCart(cart);
                     break;
                 case 5:
-                    getOrders(user);
+                    checkout(scanner, user, cart);
                     break;
                 case 6:
                     System.out.println("Logged out successfully!");
@@ -101,27 +105,21 @@ public class Main {
         }
     }
 
-    private static void addProduct(Scanner scanner) {
-        System.out.print("Enter product name: ");
-        String name = scanner.next();
-        scanner.nextLine();
-        System.out.print("Enter product price: ");
-        double price = scanner.nextDouble();
-        System.out.print("Enter product description: ");
-        scanner.nextLine();
-        String description = scanner.nextLine();
-
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setDescription(description);
+    private static void addProduct(Scanner scanner, ShoppingCart<Product> cart) {
+        System.out.print("Enter product ID: ");
+        long id = scanner.nextLong();
 
         try {
             ProductDAO productDAO = new ProductDAO();
-            productDAO.addProduct(product);
-            System.out.println("Product added successfully!");
+            Product product = productDAO.getProductById(id);
+            if (product != null) {
+                cart.addItem(product);
+                System.out.println("Product added to cart successfully!");
+            } else {
+                System.out.println("Product not found.");
+            }
         } catch (SQLException e) {
-            System.out.println("Error adding product: " + e.getMessage());
+            System.out.println("Error adding product to cart: " + e.getMessage());
         }
     }
 
@@ -157,33 +155,50 @@ public class Main {
         }
     }
 
-    private static void addOrder(Scanner scanner, User user) {
+    private static void viewCart(ShoppingCart<Product> cart) {
+        System.out.println("Cart:");
+        if (cart.getItems().size() == 0) {
+            System.out.println("Cart Empty :(");
+            System.out.println("Please Add Items To Your Cart");
+        } else {
+            for (Product product : cart.getItems()) {
+                System.out.println("ID: " + product.getId() + ", Name: " + product.getName() + ", Price: " + product.getPrice());
+            }
+        }
+    }
+
+    private static void checkout(Scanner scanner, User user, ShoppingCart<Product> cart) {
+        if (cart.getItems().size() == 0) {
+            System.out.println("Cart is empty. Please add items to your cart before checking out.");
+            return;
+        }
         System.out.print("Enter total: ");
         double total = scanner.nextDouble();
 
         Order order = new Order();
         order.setUserId(user.getId());
         order.setTotal(total);
+        order.setTimestamp(LocalDateTime.now()); // set timestamp to current time
+        order.setEstimatedDeliveryTime(Duration.ofHours(2)); // set estimated delivery time to 2 hours
+
 
         try {
             OrderDAO orderDAO = new OrderDAO();
             orderDAO.addOrder(order);
-            System.out.println("Order added successfully!");
-        } catch (SQLException e) {
-            System.out.println("Error adding order: " + e.getMessage());
-        }
-    }
-
-    private static void getOrders(User user) {
-        try {
-            OrderDAO orderDAO = new OrderDAO();
-            List<Order> orders = orderDAO.getOrders(user);
-            System.out.println("All Orders:");
-            for (Order order : orders) {
-                System.out.println("ID: " + order.getId() + ", User ID: " + order.getUserId() + ", Total: " + order.getTotal());
+            System.out.println("Order placed successfully!");
+            System.out.println("Order details:");
+            System.out.println("Products ordered:");
+            for (Product product : cart.getItems()) {
+                System.out.println("- " + product.getName());
             }
+            Timestamp currentTimestamp = Timestamp.valueOf(order.getTimestamp());
+            System.out.println("Timestamp: " + currentTimestamp);
+
+            long days = java.time.Duration.between(currentTimestamp.toLocalDateTime(), currentTimestamp.toLocalDateTime().plusDays(5)).toDays();
+            System.out.println("Estimated delivery time: " + days + " days");
         } catch (SQLException e) {
-            System.out.println("Error getting all orders: " + e.getMessage());
+            System.out.println("Error placing order: " + e.getMessage());
         }
+        cart.clear();
     }
 }

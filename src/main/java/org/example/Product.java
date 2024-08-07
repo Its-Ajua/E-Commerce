@@ -1,8 +1,9 @@
 package org.example;
 
+
 public class Product {
     private long id;
-    private String name;
+    private String name_p;
     private double price;
     private String description;
 
@@ -15,11 +16,11 @@ public class Product {
     }
 
     public String getName() {
-        return name;
+        return name_p;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name_p = name;
     }
 
     public double getPrice() {

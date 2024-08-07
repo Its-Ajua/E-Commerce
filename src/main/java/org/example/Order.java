@@ -1,9 +1,15 @@
 package org.example;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Order {
     private long id;
     private long userId;
     private double total;
+    private LocalDateTime timestamp_p;
+    private Duration estimatedDeliveryTime;
+
 
     public Order() {}
 
@@ -29,5 +35,21 @@ public class Order {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp_p;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp_p) {
+        this.timestamp_p = timestamp_p;
+    }
+
+    public Duration getEstimatedDeliveryTime() {
+        return estimatedDeliveryTime;
+    }
+
+    public void setEstimatedDeliveryTime(Duration estimatedDeliveryTime) {
+        this.estimatedDeliveryTime = estimatedDeliveryTime;
     }
 }

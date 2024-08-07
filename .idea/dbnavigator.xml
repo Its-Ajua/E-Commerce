@@ -12,28 +12,41 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="526c71ae-fc4d-4c05-ae80-0c21d24c4f76">
-      <console name="mydb" type="STANDARD" schema="public" session="Main"><![CDATA[CREATE TABLE products (
+      <console name="mydb" type="STANDARD" schema="public" session="Main"><![CDATA[CREATE TABLE orders_products (
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL
+    );
+
+CREATE TABLE products (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
+    name_p VARCHAR(255),
     price DECIMAL(10, 2) NOT NULL,
     description TEXT
-);
+    );
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    total DECIMAL(10, 2) NOT NULL
+    total DECIMAL(10, 2) NOT NULL,
+    timestamp_p TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estimateddeliverytime TIMESTAMP
 );
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    cart_id INTEGER
+);
+
+CREATE TABLE cart (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL
 );]]></console>
     </connection>
   </component>

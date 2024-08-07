@@ -4,10 +4,12 @@ public class User {
     private long id;
     private String username;
     private String password;
+    private ShoppingCart<Product> cart;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.cart = new ShoppingCart<>();
     }
 
     public long getId() {
@@ -28,6 +30,10 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public ShoppingCart<Product> getCart() {
+        return cart;
     }
 
     public void setPassword(String password) {
